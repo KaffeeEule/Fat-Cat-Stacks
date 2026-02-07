@@ -86,29 +86,39 @@ async function runAnalysis() {
 
     try {
         const timestamp = Date.now();
+        console.log("Starting analysis fetch at", timestamp);
+
         // Fetch Hot Discussions
         const response = await fetch(`data/reddit_ingested.json?t=${timestamp}`);
-        if (!response.ok) throw new Error('Hot data file not found. Run reddit_ingest.py first.');
+        if (!response.ok) throw new Error(`Hot data file not found (Status: ${response.status}). Run reddit_ingest.py first.`);
+
         const hotJSON = await response.json();
-        console.log("Hot JSON loaded:", hotJSON);
+        console.log("Raw Hot JSON:", hotJSON);
+
         const hotData = hotJSON.posts || [];
         const hotTime = hotJSON.ingested_at ? new Date(hotJSON.ingested_at).toLocaleString() : 'Unknown';
+        console.log(`Extracted ${hotData.length} posts from Hot dataset.`);
 
         // Fetch Long Term Invest data
         const ltResponse = await fetch(`data/long_term_ingested.json?t=${timestamp}`);
         if (!ltResponse.ok) console.warn('Long Term data file not found.');
         const ltJSON = ltResponse.ok ? await ltResponse.json() : { posts: [] };
         const longTermData = ltJSON.posts || [];
+        console.log(`Extracted ${longTermData.length} posts from Long Term dataset.`);
 
         state.redditPosts = hotData;
         state.longTermPosts = longTermData;
 
         // Process for dashboard
+        console.log("Processing reddit data for tickers...");
         const processed = await processRedditData(hotData);
-        console.log("Tickers found:", processed);
-        state.signals = await generateFinalSignals(processed);
-        console.log("Final signals:", state.signals);
+        console.log("Ticker stats accumulated:", processed);
 
+        console.log("Generating final signals...");
+        state.signals = await generateFinalSignals(processed);
+        console.log("Final ranked signals:", state.signals);
+
+        console.log("Triggering UI renders...");
         renderUI(state.signals, hotData.length);
         renderDiscussionFeed();
         renderLongTermFeed();
@@ -120,16 +130,16 @@ async function runAnalysis() {
         elements.statsTopScore.textContent = (maxScore).toFixed(0) + '%';
 
         // Show specific sync time in header for clarity
-        if (state.activeTab === 'dashboard' || state.activeTab === 'discussions') {
-            elements.viewDesc.textContent = `Scanned at ${hotTime}`;
+        if (elements.viewDesc) {
+            elements.viewDesc.textContent = `Scanned ${hotData.length} posts at ${hotTime}`;
         }
 
-        elements.mascotSpeech.innerText = `"Intelligence files refreshed! Data from: ${hotTime}"`;
+        elements.mascotSpeech.innerText = `"I've analyzed ${hotData.length} posts. Found ${state.signals.length} high-confidence signals!"`;
 
     } catch (error) {
-        console.error('Analysis Error:', error);
-        elements.mascotSpeech.innerText = '"I couldn\'t find the ingested data! Please run \'python reddit_ingest.py\' first."';
-        alert(error.message);
+        console.error('CRITICAL Analysis Error:', error);
+        elements.mascotSpeech.innerText = `"Oops! My brain hit a snag: ${error.message}"`;
+        alert(`Analysis Error: ${error.message}`);
     } finally {
         elements.refreshBtn.textContent = 'Scan Reddit Now';
         elements.refreshBtn.disabled = false;
