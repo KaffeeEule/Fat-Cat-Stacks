@@ -81,12 +81,25 @@ function updateViewHeader(tab) {
 }
 
 async function runAnalysis() {
-    elements.refreshBtn.textContent = 'Scanning...';
+    elements.refreshBtn.textContent = 'Ingesting Reddit...';
     elements.refreshBtn.disabled = true;
 
     try {
         const timestamp = Date.now();
-        console.log("Starting analysis fetch at", timestamp);
+        console.log("Starting local ingestion trigger at", timestamp);
+
+        if (elements.mascotSpeech) {
+            elements.mascotSpeech.innerText = `"I'm calling the mothership to fetch fresh data! Hang tight... 🐈📡"`;
+        }
+
+        // Trigger local ingestion via server.py
+        const ingestResponse = await fetch('/api/ingest', { method: 'POST' });
+        if (!ingestResponse.ok) {
+            const errorData = await ingestResponse.json();
+            throw new Error(`Ingestion failed: ${errorData.message || 'Unknown error'}`);
+        }
+
+        console.log("Ingestion successful. Now fetching newly generated data...");
 
         // Fetch Hot Discussions
         const response = await fetch(`data/reddit_ingested.json?t=${timestamp}`);
