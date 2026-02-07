@@ -6,7 +6,15 @@ import os
 import hashlib
 import sys
 from datetime import datetime
+import sys
 
+posts = fetch_all_posts()
+
+if not posts or len(posts) < 5:
+    print("ERROR: No or too few Reddit posts fetched. Aborting.")
+    sys.exit(1)   # <-- FAILS THE JOB
+
+save_posts(posts)
 # Ensure console handles emojis/unicode
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8')
