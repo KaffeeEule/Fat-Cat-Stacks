@@ -2,7 +2,7 @@
  * Step 2: Ticker Detection & Validation
  */
 
-const VALID_TICKERS = ["AAPL", "TSLA", "NVDA", "MSFT", "GME", "AMC", "GOOGL", "AMZN", "META", "NFLX", "AMD", "PLTR", "SOFI", "COIN", "MARA", "RIOT", "BABA", "NIO", "BTC", "ETH"];
+const VALID_TICKERS = ["AAPL", "TSLA", "NVDA", "MSFT", "GME", "AMC", "GOOGL", "AMZN", "META", "NFLX", "AMD", "PLTR", "SOFI", "COIN", "MARA", "RIOT", "BABA", "NIO", "BTC", "ETH", "RDDT", "HIMS", "SOUN", "ARM", "LLY", "NVO", "DOGE", "SOL", "RDDT", "HIMS", "AI", "MSTR", "IREN", "BCH", "TRX", "VTI", "VOO", "QQQ"];
 
 export function detectTickers(text) {
     // Matches $TICKER or uppercase strings of 2-5 characters

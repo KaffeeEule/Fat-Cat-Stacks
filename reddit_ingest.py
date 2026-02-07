@@ -15,9 +15,9 @@ CONFIG = {
     "subreddits": ["stocks", "investing", "wallstreetbets", "pennystocks", "cryptocurrency"],
     "pushshift_base": "https://api.pushshift.io/reddit",
     "output_file": "data/reddit_ingested.json",
-    "post_score_threshold": 100,
-    "post_comment_threshold": 100,
-    "comment_score_threshold": 30,
+    "post_score_threshold": 20,
+    "post_comment_threshold": 20,
+    "comment_score_threshold": 10,
     "recency_hours": 24
 }
 
@@ -125,7 +125,7 @@ def main():
     print("\n--- JOB 1: HOT DISCUSSIONS ---")
     temp_all_hot = []
     for sub in CONFIG["subreddits"]:
-        posts = ingest_subreddit(sub, 1, "hot", "", 100, 100) # output_file ignored
+        posts = ingest_subreddit(sub, 1, "hot", "", CONFIG["post_score_threshold"], CONFIG["post_comment_threshold"])
         if posts:
             temp_all_hot.extend(posts)
     
