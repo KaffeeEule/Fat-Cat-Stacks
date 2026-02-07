@@ -156,8 +156,18 @@ async function runAnalysis() {
 
     } catch (error) {
         console.error('CRITICAL Analysis Error:', error);
-        elements.mascotSpeech.innerText = `"Oops! My brain hit a snag: ${error.message}. Check console! 🐈⚠️"`;
-        alert(`Analysis Error: ${error.message}`);
+
+        // Specific guidance for "Failed to fetch" (usually server not running)
+        if (error.message.includes('fetch') || error.name === 'TypeError') {
+            const isFileProtocol = window.location.protocol === 'file:';
+            const msg = isFileProtocol
+                ? "You're opening index.html directly! Please use http://localhost:8000 instead. 🐈⚠️"
+                : "Cannot reach server.py! Is it running in your terminal? 🐈⚠️";
+            elements.mascotSpeech.innerText = `"${msg}"`;
+        } else {
+            elements.mascotSpeech.innerText = `"Oops! My brain hit a snag: ${error.message}. Check console! 🐈⚠️"`;
+        }
+
     } finally {
         elements.refreshBtn.textContent = 'Scan Reddit Now';
         elements.refreshBtn.disabled = false;

@@ -93,7 +93,7 @@ def ingest_subreddit(sub, days_back, sort_type, output_file, score_thresh, comme
             print(f"  Fetching comments for: {p['title'][:50]}...")
             comment_url = f"https://www.reddit.com/comments/{p['id']}.json?limit=50&sort=top"
             comment_data = fetch_reddit_json(comment_url)
-            time.sleep(2)
+            time.sleep(0.5)
             
             if comment_data and len(comment_data) > 1:
                 raw_comments = comment_data[1]['data']['children']
@@ -135,7 +135,7 @@ def main():
         if posts:
             temp_all_hot.extend(posts)
         print("  Waiting 3s before next subreddit...")
-        time.sleep(3) # Slow down to avoid bot detection
+        time.sleep(1) # Reduced from 3s for faster local execution
     
     # FAILSAFE: If we found no posts, do NOT overwrite the data file.
     # Exiting with 1 will cause the GitHub Action to fail and stop the deploy.
