@@ -134,11 +134,16 @@ async function runAnalysis() {
             elements.viewDesc.textContent = `Scanned ${hotData.length} posts at ${hotTime}`;
         }
 
-        elements.mascotSpeech.innerText = `"I've analyzed ${hotData.length} posts. Found ${state.signals.length} high-confidence signals!"`;
+        if (hotData.length === 0) {
+            console.warn("DASHBOARD DATA WARNING: Hot data array is empty.");
+            elements.mascotSpeech.innerText = `"I scanned the data, but didn't find any 'hot' signals! The market is quiet... 🐈💤"`;
+        } else {
+            elements.mascotSpeech.innerText = `"I've analyzed ${hotData.length} posts. Found ${state.signals.length} high-confidence signals!"`;
+        }
 
     } catch (error) {
         console.error('CRITICAL Analysis Error:', error);
-        elements.mascotSpeech.innerText = `"Oops! My brain hit a snag: ${error.message}"`;
+        elements.mascotSpeech.innerText = `"Oops! My brain hit a snag: ${error.message}. Check console! 🐈⚠️"`;
         alert(`Analysis Error: ${error.message}`);
     } finally {
         elements.refreshBtn.textContent = 'Scan Reddit Now';

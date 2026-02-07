@@ -6,15 +6,7 @@ import os
 import hashlib
 import sys
 from datetime import datetime
-import sys
 
-posts = fetch_all_posts()
-
-if not posts or len(posts) < 5:
-    print("ERROR: No or too few Reddit posts fetched. Aborting.")
-    sys.exit(1)   # <-- FAILS THE JOB
-
-save_posts(posts)
 # Ensure console handles emojis/unicode
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8')
@@ -42,10 +34,16 @@ def fetch_reddit_json(url, retries=3):
                 return json.loads(response.read().decode('utf-8'))
         except urllib.error.HTTPError as e:
             if e.code == 429:
-                wait = (i + 1) * 2
+                if i == retries - 1:
+                    print(f"!!! CRITICAL: Rate limited (429) retries exhausted for {url}. Exiting. !!!")
+                    sys.exit(1)
+                wait = (i + 2) * 5 # More aggressive backoff
                 print(f"  Rate limited (429). Waiting {wait}s and retrying...")
                 time.sleep(wait)
                 continue
+            if e.code == 403:
+                print(f"!!! CRITICAL: Access Forbidden (403). Reddit is likely blocking the CI runner. Exiting. !!!")
+                sys.exit(1)
             print(f"Error fetching from {url}: {e}")
             return None
         except Exception as e:
@@ -136,7 +134,17 @@ def main():
         posts = ingest_subreddit(sub, 1, "hot", "", CONFIG["post_score_threshold"], CONFIG["post_comment_threshold"])
         if posts:
             temp_all_hot.extend(posts)
+        print("  Waiting 3s before next subreddit...")
+        time.sleep(3) # Slow down to avoid bot detection
     
+    # FAILSAFE: If we found no posts, do NOT overwrite the data file.
+    # Exiting with 1 will cause the GitHub Action to fail and stop the deploy.
+    if len(temp_all_hot) < 5:
+        print(f"\n!!! FAILSAFE TRIGGERED !!!")
+        print(f"Only {len(temp_all_hot)} posts found. This is too low.")
+        print("Aborting to prevent overwriting dashboard with empty data.")
+        sys.exit(1)
+
     temp_all_hot.sort(key=lambda x: x['score'], reverse=True)
     hot_output = {
         "ingested_at": datetime.now().isoformat(),
