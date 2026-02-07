@@ -105,7 +105,9 @@ async function runAnalysis() {
 
         // Process for dashboard
         const processed = await processRedditData(hotData);
+        console.log("Tickers found:", processed);
         state.signals = await generateFinalSignals(processed);
+        console.log("Final signals:", state.signals);
 
         renderUI(state.signals, hotData.length);
         renderDiscussionFeed();
