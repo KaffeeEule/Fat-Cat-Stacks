@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fat-Cat-Stacks | Reddit Signal Intelligence</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@500;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="dark-theme">
+    <div class="app-container">
+        <!-- Sidebar / Branding -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <div class="cat-icon-css"></div>
+                <h1>Fat-Cat-Stacks</h1>
+            </div>
+            <nav>
+                <ul id="main-nav">
+                    <li data-tab="dashboard" class="active"><i class="icon-dashboard"></i> Dashboard</li>
+                    <li data-tab="discussions"><i class="icon-signals"></i> Hot Discussions</li>
+                    <li data-tab="longterm"><i class="icon-longterm"></i> Long Term Invest</li>
+                </ul>
+            </nav>
+            <div class="mascot-section">
+                <div class="mascot-bubble">
+                    <p id="mascot-speech">"Aha! The markets are whispering, and I've been listening. Here's what I
+                        found..."</p>
+                </div>
+                <div class="mascot-placeholder">
+                    <!-- Mascot will be represented by a stylized CSS cat hero -->
+                    <div class="purrfessor-cat">
+                        <div class="ear left"></div>
+                        <div class="ear right"></div>
+                        <div class="face">
+                            <div class="eye left">
+                                <div class="monocle"></div>
+                            </div>
+                            <div class="eye right"></div>
+                            <div class="nose"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="dashboard-header">
+                <div class="header-info">
+                    <h2 id="view-title">Market Intelligence Dash</h2>
+                    <p id="view-desc">Scanned: r/stocks, r/investing, r/wallstreetbets, r/pennystocks</p>
+                </div>
+                <div class="header-actions">
+                    <button id="refresh-btn" class="btn-primary">Scan Reddit Now</button>
+                </div>
+            </header>
+
+            <div id="dashboard-view" class="view-content active">
+                <section class="stats-overview">
+                    <div class="stat-card">
+                        <span class="label">Total Scanned</span>
+                        <span class="value" id="stats-total">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="label">Signals Detected</span>
+                        <span class="value" id="stats-signals">0</span>
+                    </div>
+                    <div class="stat-card highlight">
+                        <span class="label">Top Confidence</span>
+                        <span class="value" id="stats-top-score">0%</span>
+                    </div>
+                </section>
+
+                <!-- Signals Table -->
+                <section class="signals-section">
+                    <div class="section-header">
+                        <h3>Ranked Signals (Step 7)</h3>
+                        <div class="filters">
+                            <input type="text" id="ticker-search" placeholder="Search Ticker...">
+                            <select id="score-filter">
+                                <option value="0">All Scores</option>
+                                <option value="70">Trust Score > 70</option>
+                                <option value="85">High Conviction</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="signals-table">
+                            <thead>
+                                <tr>
+                                    <th>Ticker</th>
+                                    <th>Trust Score</th>
+                                    <th>Price</th>
+                                    <th>Sentiment</th>
+                                    <th>Reddit Mentions</th>
+                                    <th>Risk Flags</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="signals-body">
+                                <!-- Injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <div id="discussions-view" class="view-content">
+                <section class="discussion-feed" id="discussion-feed">
+                    <!-- High engagement cards injected here -->
+                    <div class="empty-state">
+                        "Wait for the scan to reveal the most viral conversations..."
+                    </div>
+                </section>
+            </div>
+
+            <div id="longterm-view" class="view-content">
+                <section class="discussion-feed" id="longterm-feed">
+                    <div class="empty-state">
+                        "Scanning for long-term wealth strategies..."
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Explanation Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+
+</html>
