@@ -54,7 +54,7 @@ def ingest_subreddit(sub, days_back, sort_type, output_file, score_thresh, comme
     
     if not data or 'data' not in data:
         print(f"  Failed to get data for r/{sub}")
-        return
+        return []
 
     posts = data['data']['children']
     for p_wrap in posts:
@@ -143,13 +143,20 @@ def main():
     lt_posts = ingest_subreddit("financialindependence", 7, "top", "", 0, 0)
     lt_output = {
         "ingested_at": datetime.now().isoformat(),
-        "posts": lt_posts[:10]
+        "posts": (lt_posts or [])[:10]
     }
     with open("data/long_term_ingested.json", 'w', encoding='utf-8') as f:
         json.dump(lt_output, f, indent=4)
-    print(f"LONG TERM: {len(lt_posts)} surfaced. Saved to data/long_term_ingested.json")
+    print(f"LONG TERM: {len(lt_posts or [])} surfaced. Saved to data/long_term_ingested.json")
 
     print("\nAll Ingestion Tasks Complete.")
 
+import traceback
+
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        print("\n!!! SCRIPT CRASHED !!!")
+        traceback.print_exc()
+        sys.exit(1)
